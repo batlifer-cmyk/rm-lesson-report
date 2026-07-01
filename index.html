@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RM 수업 체크리스트 · Ryan Members</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --acc:#3D5A5D;--acc2:#2d4547;--stl:#BBCBCD;--crm:#ECEBE6;
+  --wrn:#8B7355;--gd:#4A6741;--lt:#D8E3E4;--ltbg:#F4F3EF;
+  --dark:#545454;--w:#fff;--border:rgba(0,0,0,0.09);--r:10px;
+  --sh:0 2px 16px rgba(61,90,93,.1)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR','Poppins',sans-serif;background:#eceae4;color:var(--dark);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── LAYOUT ── */
+.shell{max-width:680px;margin:0 auto;padding:20px 14px 60px}
+
+/* ── HEADER ── */
+.app-header{background:var(--acc);border-radius:var(--r) var(--r) 0 0;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.app-header h1{font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;color:#fff}
+.app-header .sub{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--stl);margin-bottom:2px}
+.session-badge{font-family:'Poppins',sans-serif;font-size:12px;color:#fff;background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;white-space:nowrap}
+
+/* ── INFO BAR ── */
+.info-bar{background:var(--w);border:1px solid var(--border);border-top:none;padding:12px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.field label{font-size:10px;color:#aaa;display:block;margin-bottom:3px}
+.field input,.field select{width:100%;padding:6px 10px;font-size:13px;border:1px solid #ddd;border-radius:6px;font-family:inherit;background:var(--w);color:var(--dark)}
+
+/* ── SESSION TYPE TOGGLE ── */
+.session-toggle{background:var(--ltbg);border:1px solid var(--border);border-top:none;padding:10px 20px;display:flex;gap:8px;align-items:center}
+.session-toggle span{font-size:11px;color:#888;margin-right:4px}
+.tog-btn{padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:var(--w);cursor:pointer;font-size:12px;font-family:inherit;color:#888;transition:.15s}
+.tog-btn.active{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:500}
+
+/* ── SECTION CARD ── */
+.card{background:var(--w);border:1px solid var(--border);border-top:none;overflow:hidden}
+.card:last-child{border-radius:0 0 var(--r) var(--r)}
+.card-hd{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+.card-hd-left{display:flex;align-items:center;gap:10px}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-hd h2{font-size:13px;font-weight:600;color:var(--acc)}
+.card-hd .card-sub{font-size:10px;color:#aaa;margin-top:1px}
+.card-score{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:3px 12px;border-radius:20px;flex-shrink:0}
+.card-body{padding:14px 20px;display:none}
+.card-body.open{display:block}
+
+/* ── CHECK ITEMS ── */
+.check-group{margin-bottom:14px}
+.check-group-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);font-weight:600;margin-bottom:7px}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:.15s;margin-bottom:6px;background:var(--ltbg)}
+.check-item:hover{border-color:var(--stl)}
+.check-item.done{background:#f0fff4;border-color:#a3d9a5}
+.check-item.done .ci-text{color:var(--gd)}
+.check-item.todo{background:#fff8f0;border-color:#f5c87a}
+.check-item.todo .ci-text{color:var(--wrn)}
+.check-item.na{opacity:.4}
+.ci-box{width:20px;height:20px;border-radius:5px;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s;font-size:12px}
+.check-item.done .ci-box{background:var(--gd);border-color:var(--gd);color:#fff}
+.check-item.todo .ci-box{background:#f5c87a;border-color:#f5c87a;color:#fff}
+.ci-text{font-size:12.5px;line-height:1.5}
+.ci-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px;white-space:nowrap;flex-shrink:0}
+.badge-core{background:#e8f5e9;color:var(--gd)}
+.badge-ext{background:#e3f2fd;color:#1565c0}
+.badge-test{background:#fce4ec;color:#c2185b}
+
+/* ── RATING ── */
+.rating-row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.rat-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--ltbg);cursor:pointer;font-size:12px;font-family:inherit;color:#888;transition:.15s;white-space:nowrap}
+.rat-btn:hover{border-color:var(--stl)}
+.rat-btn.sel-1{background:#c0392b;color:#fff;border-color:#c0392b}
+.rat-btn.sel-2{background:#e67e22;color:#fff;border-color:#e67e22}
+.rat-btn.sel-3{background:var(--wrn);color:#fff;border-color:var(--wrn)}
+.rat-btn.sel-4{background:var(--acc);color:#fff;border-color:var(--acc)}
+.rat-btn.sel-5{background:var(--gd);color:#fff;border-color:var(--gd)}
+/* ── 3스타 평가 ── */
+.star-row{display:flex;align-items:center;gap:4px}
+.star{font-size:26px;cursor:pointer;transition:.1s;line-height:1;color:#ddd;user-select:none}
+.star:hover,.star.on{color:#f5c518}
+.star.on{text-shadow:0 0 4px rgba(245,197,24,.4)}
+
+/* ── NOTES ── */
+.note-field{width:100%;padding:8px 10px;font-size:12px;border:1px solid #ddd;border-radius:6px;font-family:inherit;resize:vertical;min-height:56px;background:var(--ltbg);color:var(--dark);margin-top:6px}
+.note-label{font-size:10px;color:#aaa;margin-bottom:4px}
+
+/* ── PROGRESS BAR ── */
+.prog-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--lt);margin-bottom:4px}
+.prog-row:last-child{border-bottom:none}
+.prog-label{font-size:11.5px;flex:1}
+.prog-track{width:100px;height:7px;background:var(--lt);border-radius:4px;overflow:hidden;flex-shrink:0}
+.prog-fill{height:100%;border-radius:4px;transition:width .3s}
+.prog-val{font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;width:28px;text-align:right;flex-shrink:0}
+
+/* ── SUMMARY PANEL ── */
+.summary-panel{background:var(--acc);border-radius:var(--r);padding:16px 20px;margin-top:14px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sum-row:last-child{margin-bottom:0}
+.sum-label{font-size:12px;color:var(--stl)}
+.sum-val{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:#fff}
+.sum-divider{border:none;border-top:1px solid rgba(255,255,255,.15);margin:10px 0}
+.sum-total{font-family:'Poppins',sans-serif;font-size:20px;font-weight:600;color:#fff}
+.sum-grade{font-size:11px;color:var(--crm);margin-top:2px}
+
+/* ── ACTION BAR ── */
+.action-bar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn-acc{background:var(--acc);color:#fff;border:none;padding:9px 20px;border-radius:7px;cursor:pointer;font-size:12.5px;font-weight:500;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:6px}
+.btn-acc:hover{background:var(--acc2)}
+.btn-ghost{background:transparent;color:var(--dark);border:1px solid #ccc;padding:9px 16px;border-radius:7px;cursor:pointer;font-size:12.5px;font-family:inherit}
+
+/* ── TODO TAG ── */
+.todo-section{background:var(--ltbg);border:1px solid var(--lt);border-radius:var(--r);padding:14px 16px;margin-top:14px}
+.todo-section h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--wrn);font-weight:600;margin-bottom:10px}
+.todo-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #f5c87a;border-radius:20px;padding:4px 12px;font-size:11.5px;color:var(--wrn);margin:3px}
+
+/* ── SMALLTALK TEST (3회차) ── */
+.test-only{display:none}
+.test-mode .test-only{display:block}
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.topic-card{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:.15s;background:var(--ltbg)}
+.topic-card:hover{border-color:var(--stl)}
+.topic-card.done{background:#f0fff4;border-color:#a3d9a5}
+.topic-card .tc-name{font-size:12.5px;font-weight:500;color:var(--dark);margin-bottom:4px}
+.topic-card .tc-count{font-size:10px;color:#aaa}
+.answer-dots{display:flex;gap:5px;margin-top:5px}
+.answer-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;cursor:pointer;transition:.15s;flex-shrink:0}
+.answer-dot.filled{background:var(--gd);border-color:var(--gd)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .info-bar{grid-template-columns:1fr 1fr}
+  .topic-grid{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}
+  .shell{padding:0}
+  .action-bar,.session-toggle .tog-btn{display:none}
+  .card-body{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── HEADER ── -->
+<div class="app-header">
+  <div>
+    <div class="sub">Ryan Members · 강사용 내부 도구</div>
+    <h1>매 수업 체크리스트</h1>
+  </div>
+  <div class="session-badge" id="sessionBadge">수업 #1</div>
+</div>
+
+<!-- ── INFO ── -->
+<div class="info-bar">
+  <div class="field"><label>학생 이름</label><input id="studentName" type="text" placeholder="예: 김지수" oninput="updateHeader()"></div>
+  <div class="field"><label>담당 강사</label><input id="instructorName" type="text" placeholder="예: Matthew" oninput="updateHeader()"></div>
+  <div class="field"><label>수업 회차</label><input id="sessionNum" type="number" min="1" value="1" oninput="updateSession()"></div>
+</div>
+
+<!-- ── SESSION TYPE ── -->
+<div class="session-toggle">
+  <span>수업 유형:</span>
+  <button class="tog-btn active" id="btn-regular" onclick="setMode('regular')">일반 수업</button>
+  <button class="tog-btn" id="btn-test" onclick="setMode('test')">스피킹 테스트 (3회차)</button>
+</div>
+
+<!-- ════════════════════════════
+     섹션 1 · 메세지하우스
+════════════════════════════ -->
+<div class="card" id="sec-mh">
+  <div class="card-hd" onclick="toggleCard('mh')">
+    <div class="card-hd-left">
+      <div class="card-icon" style="background:#e8f5f5">💬</div>
+      <div>
+        <h2>메세지하우스 달성</h2>
+        <div class="card-sub">Message House — 발화 구조 평가</div>
+      </div>
+    </div>
+    <div class="card-score" id="score-mh" style="background:#f0f0f0;color:#aaa">0 / 3</div>
+  </div>
+  <div class="card-body open" id="body-mh">
+
+    <div class="check-group">
+      <div class="check-group-label">달성 유형 선택 (해당 항목 클릭)</div>
+
+      <div class="check-item" id="ci-aaa" onclick="toggleCheck('aaa')">
+        <div class="ci-box" id="box-aaa"></div>
+        <div style="flex:1">
+          <div class="ci-text">
+            <strong>AAA형</strong> — 응답(Answer) + 부연(Add) + 반문(Ask) 3문장 구조
+            <span class="ci-badge badge-core">핵심</span>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">가장 기본 구조 · 매 발화마다 목표</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-5w1h" onclick="toggleCheck('5w1h')">
+        <div class="ci-box" id="box-5w1h"></div>
+        <div style="flex:1">
+          <div class="ci-text">
+            <strong>육하원칙형</strong> — 5W1H 포함 + 마무리(종합 또는 반문)
+            <span class="ci-badge badge-ext">발전</span>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">Who/What/When/Where/Why/How 최대한 다루기</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-logic" onclick="toggleCheck('logic')">
+        <div class="ci-box" id="box-logic"></div>
+        <div style="flex:1">
+          <div class="ci-text">
+            <strong>논리적 메세지하우스</strong> — 주장 → 이유 → 근거·예시 → 마무리
+            <span class="ci-badge badge-ext">고급</span>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">설득적 발화 구조 완성 단계</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="check-group" style="margin-bottom:0">
+      <div class="check-group-label">오늘 달성하지 못한 항목 (다음 수업 목표)</div>
+
+      <div class="check-item todo" id="ci-no-counter" onclick="toggleTodo('no-counter')">
+        <div class="ci-box" id="box-no-counter">!</div>
+        <div class="ci-text">반문(Ask) 없이 종료 — 다음 수업 반드시 반문으로 마무리</div>
+      </div>
+
+      <div class="check-item todo" id="ci-no-5w" onclick="toggleTodo('no-5w')">
+        <div class="ci-box" id="box-no-5w">!</div>
+        <div class="ci-text">5W1H 누락 요소 있음 — 다음 수업 누락 요소 의식적 추가</div>
+      </div>
+
+      <div class="check-item todo" id="ci-one-liner" onclick="toggleTodo('one-liner')">
+        <div class="ci-box" id="box-one-liner">!</div>
+        <div class="ci-text">단답형 종료 (1문장) — 다음 수업 최소 AAA 3문장 목표</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="note-label">강사 메모</div>
+      <textarea class="note-field" id="note-mh" placeholder="오늘 특이사항, 잘된 표현, 교정 포인트..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     섹션 2 · 시제 다양화
+════════════════════════════ -->
+<div class="card" id="sec-tense">
+  <div class="card-hd" onclick="toggleCard('tense')">
+    <div class="card-hd-left">
+      <div class="card-icon" style="background:#fff3e0">⏱</div>
+      <div>
+        <h2>동사구 시제 다양화</h2>
+        <div class="card-sub">5가지 완료형 달성 체크</div>
+      </div>
+    </div>
+    <div class="card-score" id="score-tense" style="background:#f0f0f0;color:#aaa">0 / 5</div>
+  </div>
+  <div class="card-body" id="body-tense">
+
+    <div class="check-group">
+      <div class="check-group-label">오늘 사용된 시제 (해당 항목 클릭)</div>
+
+      <div class="check-item" id="ci-t-pres-perf" onclick="toggleCheck('t-pres-perf')">
+        <div class="ci-box" id="box-t-pres-perf"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>현재완료</strong> 사용 ✓ <span class="ci-badge badge-core">핵심</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">have / has + p.p.</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-t-past-perf" onclick="toggleCheck('t-past-perf')">
+        <div class="ci-box" id="box-t-past-perf"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>과거완료</strong> 사용 ✓ <span class="ci-badge badge-core">핵심</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">had + p.p.</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-t-fut-perf" onclick="toggleCheck('t-fut-perf')">
+        <div class="ci-box" id="box-t-fut-perf"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>미래완료</strong> 사용 ✓ <span class="ci-badge badge-ext">발전</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">will have + p.p.</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-t-perf-prog" onclick="toggleCheck('t-perf-prog')">
+        <div class="ci-box" id="box-t-perf-prog"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>완료진행형</strong> 사용 ✓ <span class="ci-badge badge-ext">발전</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">have been -ing / had been -ing</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-t-perf-pass" onclick="toggleCheck('t-perf-pass')">
+        <div class="ci-box" id="box-t-perf-pass"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>완료수동형</strong> 사용 ✓ <span class="ci-badge badge-ext">발전</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">have been + p.p. / had been + p.p.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="check-group" style="margin-bottom:0">
+      <div class="check-group-label">다음 수업 목표 (미달성 완료형 선택)</div>
+
+      <div class="check-item todo" id="ci-t-todo-pres" onclick="toggleTodo('t-todo-pres')">
+        <div class="ci-box" id="box-t-todo-pres">!</div>
+        <div class="ci-text">현재완료 (have/has p.p.) 의식적 사용 도전</div>
+      </div>
+
+      <div class="check-item todo" id="ci-t-todo-past" onclick="toggleTodo('t-todo-past')">
+        <div class="ci-box" id="box-t-todo-past">!</div>
+        <div class="ci-text">과거완료 (had p.p.) 의식적 사용 도전</div>
+      </div>
+
+      <div class="check-item todo" id="ci-t-todo-fut" onclick="toggleTodo('t-todo-fut')">
+        <div class="ci-box" id="box-t-todo-fut">!</div>
+        <div class="ci-text">미래완료 (will have p.p.) 의식적 사용 도전</div>
+      </div>
+
+      <div class="check-item todo" id="ci-t-todo-prog" onclick="toggleTodo('t-todo-prog')">
+        <div class="ci-box" id="box-t-todo-prog">!</div>
+        <div class="ci-text">완료진행형 (have been -ing) 의식적 사용 도전</div>
+      </div>
+
+      <div class="check-item todo" id="ci-t-todo-passv" onclick="toggleTodo('t-todo-passv')">
+        <div class="ci-box" id="box-t-todo-passv">!</div>
+        <div class="ci-text">완료수동형 (have been p.p.) 의식적 사용 도전</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="note-label">오늘 사용된 예시 표현 (메모)</div>
+      <textarea class="note-field" id="note-tense" placeholder="예: I have been working on this project since... / The report was submitted by..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     섹션 3 · 확장문장
+════════════════════════════ -->
+<div class="card" id="sec-ext">
+  <div class="card-hd" onclick="toggleCard('ext')">
+    <div class="card-hd-left">
+      <div class="card-icon" style="background:#f3e5f5">🔗</div>
+      <div>
+        <h2>확장문장 달성</h2>
+        <div class="card-sub">관계대명사 · 분사구문으로 문장 연장</div>
+      </div>
+    </div>
+    <div class="card-score" id="score-ext" style="background:#f0f0f0;color:#aaa">0 / 3</div>
+  </div>
+  <div class="card-body" id="body-ext">
+
+    <div class="check-group">
+      <div class="check-group-label">오늘 사용된 확장 기법 (해당 항목 클릭)</div>
+
+      <div class="check-item" id="ci-rel" onclick="toggleCheck('rel')">
+        <div class="ci-box" id="box-rel"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>관계대명사</strong> 사용 ✓ <span class="ci-badge badge-core">핵심</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">who / which / that / whose / whom</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-part" onclick="toggleCheck('part')">
+        <div class="ci-box" id="box-part"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>분사구문</strong> 사용 ✓ <span class="ci-badge badge-core">핵심</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">-ing / p.p. 구문으로 절 축약</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="ci-both" onclick="toggleCheck('both')">
+        <div class="ci-box" id="box-both"></div>
+        <div style="flex:1">
+          <div class="ci-text"><strong>관계대명사 + 분사구문 동시</strong> 사용 ✓ <span class="ci-badge badge-ext">고급</span></div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">한 발화에서 두 기법 모두 사용</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="check-group" style="margin-bottom:0">
+      <div class="check-group-label">다음 수업 목표</div>
+
+      <div class="check-item todo" id="ci-ext-todo-rel" onclick="toggleTodo('ext-todo-rel')">
+        <div class="ci-box" id="box-ext-todo-rel">!</div>
+        <div class="ci-text">관계대명사 최소 1회 의식적 사용</div>
+      </div>
+
+      <div class="check-item todo" id="ci-ext-todo-part" onclick="toggleTodo('ext-todo-part')">
+        <div class="ci-box" id="box-ext-todo-part">!</div>
+        <div class="ci-text">분사구문으로 두 문장을 한 문장으로 연결</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="note-label">오늘 사용된 확장문장 예시</div>
+      <textarea class="note-field" id="note-ext" placeholder="예: The project that I've been working on... / Having finished early, she..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     섹션 4 · 스피킹 테스트 (3회차 전용)
+════════════════════════════ -->
+<div class="card test-only" id="sec-test">
+  <div class="card-hd" onclick="toggleCard('test')">
+    <div class="card-hd-left">
+      <div class="card-icon" style="background:#fce4ec">🎯</div>
+      <div>
+        <h2>스피킹 테스트 — 스몰톡 7대 주제</h2>
+        <div class="card-sub">주제당 3~4가지 답변 가능 여부 확인</div>
+      </div>
+    </div>
+    <div class="card-score" id="score-test" style="background:#fce4ec;color:#c2185b">0 / 7</div>
+  </div>
+  <div class="card-body" id="body-test">
+
+    <div style="background:#fff8f9;border:1px solid #f5c0c0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--dark);line-height:1.7">
+      🎯 <strong>테스트 기준:</strong> 각 주제에 대해 <strong>본인 에피소드 기반</strong> 답변 3~4가지 가능 여부 확인.<br>
+      각 주제의 답변 개수(●)를 클릭해서 기록하세요.
+    </div>
+
+    <div class="topic-grid" id="topicGrid"></div>
+
+    <div style="margin-top:10px">
+      <div class="note-label">테스트 총평 메모</div>
+      <textarea class="note-field" id="note-test" placeholder="잘된 주제, 보완 필요 주제, 전체 인상..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     종합 평가
+════════════════════════════ -->
+<div class="card" id="sec-overall">
+  <div class="card-hd" onclick="toggleCard('overall')">
+    <div class="card-hd-left">
+      <div class="card-icon" style="background:#e8f5e9">⭐</div>
+      <div>
+        <h2>오늘 수업 종합 평가</h2>
+        <div class="card-sub">강사 종합 코멘트 및 다음 수업 준비</div>
+      </div>
+    </div>
+    <div class="card-score" id="score-overall" style="background:#f0f0f0;color:#aaa">—</div>
+  </div>
+  <div class="card-body" id="body-overall">
+
+    <div class="check-group">
+      <div class="check-group-label">오늘 수업 종합 평가 — ★ 별 3개 점수제</div>
+      <div style="display:grid;gap:10px;margin-top:4px">
+
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:5px">메세지하우스 완성도</div>
+          <div class="star-row" id="star-mh-quality">
+            <span class="star" onclick="setStar('mh-quality',1)">☆</span>
+            <span class="star" onclick="setStar('mh-quality',2)">☆</span>
+            <span class="star" onclick="setStar('mh-quality',3)">☆</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px" id="star-mh-quality-label">미평가</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:5px">시제·확장문장 다양성</div>
+          <div class="star-row" id="star-grammar">
+            <span class="star" onclick="setStar('grammar',1)">☆</span>
+            <span class="star" onclick="setStar('grammar',2)">☆</span>
+            <span class="star" onclick="setStar('grammar',3)">☆</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px" id="star-grammar-label">미평가</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:5px">참여도 · 발화 자신감</div>
+          <div class="star-row" id="star-attitude">
+            <span class="star" onclick="setStar('attitude',1)">☆</span>
+            <span class="star" onclick="setStar('attitude',2)">☆</span>
+            <span class="star" onclick="setStar('attitude',3)">☆</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px" id="star-attitude-label">미평가</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:5px">스몰톡 에피소드 준비</div>
+          <div class="star-row" id="star-smalltalk">
+            <span class="star" onclick="setStar('smalltalk',1)">☆</span>
+            <span class="star" onclick="setStar('smalltalk',2)">☆</span>
+            <span class="star" onclick="setStar('smalltalk',3)">☆</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px" id="star-smalltalk-label">미평가</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="check-group" style="margin-bottom:0">
+      <div class="note-label">오늘 잘한 것 (강점)</div>
+      <textarea class="note-field" id="note-good" placeholder="오늘 특히 잘된 표현, 구조, 태도..."></textarea>
+      <div class="note-label" style="margin-top:8px">다음 수업 핵심 목표 (1가지)</div>
+      <textarea class="note-field" id="note-next" placeholder="다음 수업에서 반드시 달성해야 할 것 1가지..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACTION BAR ── -->
+<div class="action-bar">
+  <button class="btn-acc" onclick="generateSummary()">📋 요약 레포트 보기</button>
+  <button class="btn-acc" style="background:var(--gd)" onclick="saveSession()">💾 저장</button>
+  <button class="btn-ghost" onclick="resetAll()">초기화</button>
+  <button class="btn-ghost" onclick="window.print()">🖨 인쇄</button>
+</div>
+
+<!-- ── SUMMARY ── -->
+<div id="summaryArea" style="display:none;margin-top:14px"></div>
+
+</div><!-- /shell -->
+
+<script>
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+const STATE = {
+  mode: 'regular', // 'regular' | 'test'
+  checks: {},      // id → true/false
+  todos: {},       // id → true/false
+  ratings: {},     // key → 1~5
+  topicAnswers: {}, // topicId → 0~4
+};
+
+const TOPICS = [
+  {id:'weather',    name:'날씨 · 출신지 · 지역정보', emoji:'🌤', book:'1권 Ch.1·4'},
+  {id:'food',       name:'음식 · 요리 · 맛집', emoji:'🍜', book:'1권 Ch.2'},
+  {id:'family',     name:'가족 · 인간관계', emoji:'👨‍👩‍👧', book:'1권 Ch.3 · 3권 Ch.1'},
+  {id:'hobby',      name:'자유시간 · 취미 · 관심사', emoji:'🎸', book:'2권 Ch.1'},
+  {id:'job',        name:'직업 · 전공 · 학교생활', emoji:'💼', book:'2권 Ch.2 · 3권 Ch.2'},
+  {id:'travel',     name:'해외여행 · 국내여행', emoji:'✈️', book:'2권 Ch.3'},
+  {id:'lifestyle',  name:'외모 · 쇼핑 · 자동차 · 라이프스타일', emoji:'🛍', book:'3권 Ch.3·4·5'},
+];
+
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
+window.onload = function() {
+  buildTopicGrid();
+  autoFillDate();
+  updateScore();
+};
+
+function autoFillDate() {
+  const today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  // 날짜는 sessionBadge에 반영
+}
+
+/* ══════════════════════════════
+   MODE
+══════════════════════════════ */
+function setMode(mode) {
+  STATE.mode = mode;
+  document.getElementById('btn-regular').classList.toggle('active', mode==='regular');
+  document.getElementById('btn-test').classList.toggle('active', mode==='test');
+  document.querySelectorAll('.test-only').forEach(function(el) {
+    el.style.display = mode==='test' ? 'block' : 'none';
+  });
+  updateScore();
+}
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+function updateHeader() {
+  const name = document.getElementById('studentName').value || '학생';
+  const inst = document.getElementById('instructorName').value || '강사';
+  const today = new Date().toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
+  document.getElementById('summaryArea').style.display = 'none';
+}
+
+function updateSession() {
+  const n = parseInt(document.getElementById('sessionNum').value) || 1;
+  document.getElementById('sessionBadge').textContent = '수업 #' + n;
+  // 3의 배수이면 테스트 모드 안내
+  if(n % 3 === 0) {
+    document.getElementById('btn-test').style.boxShadow = '0 0 0 2px #c2185b';
+  } else {
+    document.getElementById('btn-test').style.boxShadow = '';
+  }
+}
+
+/* ══════════════════════════════
+   CHECK ITEMS
+══════════════════════════════ */
+function toggleCheck(id) {
+  STATE.checks[id] = !STATE.checks[id];
+  const item = document.getElementById('ci-' + id);
+  const box  = document.getElementById('box-' + id);
+  if(STATE.checks[id]) {
+    item.classList.add('done');
+    box.textContent = '✓';
+  } else {
+    item.classList.remove('done');
+    box.textContent = '';
+  }
+  updateScore();
+}
+
+function toggleTodo(id) {
+  STATE.todos[id] = !STATE.todos[id];
+  const item = document.getElementById('ci-' + id);
+  const box  = document.getElementById('box-' + id);
+  if(STATE.todos[id]) {
+    item.style.opacity = '.4';
+    box.textContent = '✓';
+    box.style.background = '#aaa';
+    box.style.borderColor = '#aaa';
+    box.style.color = '#fff';
+  } else {
+    item.style.opacity = '1';
+    box.textContent = '!';
+    box.style.background = '';
+    box.style.borderColor = '';
+    box.style.color = '';
+  }
+}
+
+/* ══════════════════════════════
+   STAR RATING (3스타 점수제)
+══════════════════════════════ */
+function setStar(key, val) {
+  STATE.ratings[key] = val;
+  const row = document.getElementById('star-' + key);
+  const stars = row.querySelectorAll('.star');
+  stars.forEach(function(s, i) {
+    s.textContent = i < val ? '★' : '☆';
+    s.classList.toggle('on', i < val);
+  });
+  const labels = {
+    1: '★ 기초 — 더 연습 필요',
+    2: '★★ 양호 — 꾸준히 성장 중',
+    3: '★★★ 우수 — 오늘 목표 달성!'
+  };
+  const labelEl = document.getElementById('star-' + key + '-label');
+  if(labelEl) labelEl.textContent = labels[val] || '';
+  updateScore();
+}
+function setRating(key, val) { setStar(key, val); }
+
+/* ══════════════════════════════
+   TOPIC GRID (테스트)
+══════════════════════════════ */
+function buildTopicGrid() {
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = TOPICS.map(function(tp) {
+    return '<div class="topic-card" id="tc-'+tp.id+'">'
+      + '<div class="tc-name">'+tp.emoji+' '+tp.name+'</div>'
+      + '<div style="font-size:9px;color:#aaa;margin-bottom:3px">'+( tp.book||'')+' </div>'
+      + '<div class="tc-count">에피소드 답변: <strong id="tc-cnt-'+tp.id+'">0</strong> / 4</div>'
+      + '<div class="answer-dots" id="tc-dots-'+tp.id+'">'
+      + [1,2,3,4].map(function(n){
+          return '<div class="answer-dot" id="tc-dot-'+tp.id+'-'+n+'" onclick="setTopicAnswer(\''+tp.id+'\','+n+')"></div>';
+        }).join('')
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function setTopicAnswer(topicId, count) {
+  STATE.topicAnswers[topicId] = count;
+  const dots = document.querySelectorAll('#tc-dots-'+topicId+' .answer-dot');
+  dots.forEach(function(d, i) {
+    d.classList.toggle('filled', i < count);
+  });
+  document.getElementById('tc-cnt-'+topicId).textContent = count;
+  const card = document.getElementById('tc-'+topicId);
+  card.classList.toggle('done', count >= 3);
+  updateScore();
+}
+
+/* ══════════════════════════════
+   SCORE CALC
+══════════════════════════════ */
+function updateScore() {
+  // 메세지하우스 (max 3)
+  let mh = 0;
+  if(STATE.checks['aaa'])   mh = Math.max(mh, 1);
+  if(STATE.checks['5w1h'])  mh = Math.max(mh, 2);
+  if(STATE.checks['logic']) mh = Math.max(mh, 3);
+  setCardScore('mh', mh, 3);
+
+  // 시제 완료형 5가지 (max 5)
+  let tense = 0;
+  if(STATE.checks['t-pres-perf']) tense++;
+  if(STATE.checks['t-past-perf']) tense++;
+  if(STATE.checks['t-fut-perf'])  tense++;
+  if(STATE.checks['t-perf-prog']) tense++;
+  if(STATE.checks['t-perf-pass']) tense++;
+  setCardScore('tense', tense, 5);
+
+  // 확장문장 (max 3)
+  let ext = 0;
+  if(STATE.checks['rel'])  ext = Math.max(ext, 1);
+  if(STATE.checks['part']) ext = Math.max(ext, 2);
+  if(STATE.checks['both']) ext = Math.max(ext, 3);
+  setCardScore('ext', ext, 3);
+
+  // 스피킹 테스트 (max 7)
+  if(STATE.mode === 'test') {
+    let testPassed = TOPICS.filter(function(tp){
+      return (STATE.topicAnswers[tp.id]||0) >= 3;
+    }).length;
+    setCardScore('test', testPassed, 7, '#fce4ec', '#c2185b');
+  }
+
+  // 3스타 종합 평가
+  const starKeys = ['mh-quality','grammar','attitude','smalltalk'];
+  const starVals = starKeys.map(function(k){ return STATE.ratings[k]||0; });
+  const filledCount = starVals.filter(function(v){return v>0;}).length;
+  const avgStar = filledCount > 0 ? (starVals.reduce(function(a,b){return a+b;},0)/filledCount).toFixed(1) : 0;
+  const overallEl = document.getElementById('score-overall');
+  if(filledCount > 0) {
+    const fullStars = Math.round(avgStar);
+    overallEl.textContent = '★'.repeat(fullStars) + '☆'.repeat(3-fullStars) + ' ' + avgStar;
+    overallEl.style.background = '#fff9e6';
+    overallEl.style.color = '#b8860b';
+  } else {
+    overallEl.textContent = '—';
+    overallEl.style.background = '#f0f0f0';
+    overallEl.style.color = '#aaa';
+  }
+}
+
+function setCardScore(id, val, max, bg, col) {
+  const el = document.getElementById('score-' + id);
+  if(!el) return;
+  const pct = max > 0 ? val/max : 0;
+  el.textContent = val + ' / ' + max;
+  if(bg) { el.style.background = bg; el.style.color = col; return; }
+  if(pct >= 1)       { el.style.background='#e8f5e9'; el.style.color='#2e7d32'; }
+  else if(pct >= .5) { el.style.background='#fff3e0'; el.style.color='#e65100'; }
+  else if(val > 0)   { el.style.background='#fff8f0'; el.style.color=var_wrn(); }
+  else               { el.style.background='#f0f0f0'; el.style.color='#aaa'; }
+}
+
+function var_wrn(){ return '#8B7355'; }
+
+/* ══════════════════════════════
+   CARD TOGGLE
+══════════════════════════════ */
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  body.classList.toggle('open');
+}
+
+/* ══════════════════════════════
+   SUMMARY
+══════════════════════════════ */
+function generateSummary() {
+  const area = document.getElementById('summaryArea');
+  const name = document.getElementById('studentName').value || '학생';
+  const inst = document.getElementById('instructorName').value || '강사';
+  const sess = document.getElementById('sessionNum').value || '1';
+  const today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+
+  // 달성 목록
+  const achievements = [];
+  if(STATE.checks['aaa'])     achievements.push('메세지하우스 — AAA형 (3문장) ✓');
+  if(STATE.checks['5w1h'])    achievements.push('메세지하우스 — 육하원칙형 ✓');
+  if(STATE.checks['logic'])   achievements.push('메세지하우스 — 논리적 구조 ✓');
+  if(STATE.checks['t-perfect']) achievements.push('시제 다양화 — 완료형 사용 ✓');
+  if(STATE.checks['t-perfprog'])achievements.push('시제 다양화 — 완료진행형 사용 ✓');
+  if(STATE.checks['t-passive']) achievements.push('시제 다양화 — 수동형 사용 ✓');
+  if(STATE.checks['rel'])     achievements.push('확장문장 — 관계대명사 ✓');
+  if(STATE.checks['part'])    achievements.push('확장문장 — 분사구문 ✓');
+  if(STATE.checks['both'])    achievements.push('확장문장 — 두 기법 동시 ✓');
+
+  // 다음 목표
+  const todos = [];
+  if(STATE.todos['no-counter'])   todos.push('반문(Ask)으로 마무리 연습');
+  if(STATE.todos['no-5w'])        todos.push('5W1H 누락 요소 의식적 추가');
+  if(STATE.todos['one-liner'])    todos.push('AAA 3문장 구조 달성');
+  if(STATE.todos['t-todo-perf'])  todos.push('현재완료/과거완료 사용 도전');
+  if(STATE.todos['t-todo-passive'])todos.push('수동형 문장 1회 이상 사용');
+  if(STATE.todos['ext-todo-rel']) todos.push('관계대명사 의식적 사용');
+  if(STATE.todos['ext-todo-part'])todos.push('분사구문으로 두 문장 연결');
+
+  // 테스트 결과
+  let testHtml = '';
+  if(STATE.mode === 'test') {
+    const passed = TOPICS.filter(function(tp){return (STATE.topicAnswers[tp.id]||0)>=3;});
+    const failed = TOPICS.filter(function(tp){return (STATE.topicAnswers[tp.id]||0)<3;});
+    testHtml = '<div style="margin-top:14px">'
+      + '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c2185b;font-weight:600;margin-bottom:8px">스피킹 테스트 결과</div>'
+      + passed.map(function(tp){return '<div style="font-size:12px;color:#2e7d32;padding:3px 0">✓ '+tp.name+' ('+( STATE.topicAnswers[tp.id]||0)+'가지)</div>';}).join('')
+      + failed.map(function(tp){return '<div style="font-size:12px;color:#c0392b;padding:3px 0">△ '+tp.name+' ('+( STATE.topicAnswers[tp.id]||0)+'가지 — 3가지 이상 필요)</div>';}).join('')
+      + '</div>';
+  }
+
+  const noteGood = document.getElementById('note-good').value;
+  const noteNext = document.getElementById('note-next').value;
+
+  area.style.display = 'block';
+  area.innerHTML = '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh)">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">'
+    + '<div>'
+    + '<div style="font-family:Poppins,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:3px">Ryan Members · 수업 체크리스트</div>'
+    + '<div style="font-size:16px;font-weight:600;color:var(--dark)">'+name+'</div>'
+    + '<div style="font-size:11px;color:#aaa;margin-top:2px">수업 #'+sess+' · '+today+' · '+inst+'</div>'
+    + '</div>'
+    + '<div style="font-family:Poppins,sans-serif;font-size:28px;font-weight:700;color:var(--acc)">'+achievements.length+'<span style="font-size:13px;color:#aaa;font-weight:400"> 달성</span></div>'
+    + '</div>'
+
+    + (achievements.length > 0 ? '<div style="margin-bottom:12px">'
+    + '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:8px">✦ 오늘 달성</div>'
+    + achievements.map(function(a){return '<div style="font-size:12.5px;color:var(--gd);padding:3px 0;display:flex;gap:8px"><span>✓</span><span>'+a+'</span></div>';}).join('')
+    + '</div>' : '')
+
+    + testHtml
+
+    + (todos.length > 0 ? '<div style="margin-top:12px;padding:12px 14px;background:var(--ltbg);border-radius:8px">'
+    + '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--wrn);font-weight:600;margin-bottom:8px">▶ 다음 수업 목표</div>'
+    + todos.map(function(t){return '<div style="font-size:12.5px;color:var(--wrn);padding:3px 0;display:flex;gap:8px"><span>→</span><span>'+t+'</span></div>';}).join('')
+    + '</div>' : '')
+
+    + (noteGood ? '<div style="margin-top:10px"><div style="font-size:10px;color:#aaa;margin-bottom:3px">오늘 잘한 것</div><div style="font-size:12px;line-height:1.7">'+noteGood+'</div></div>' : '')
+    + (noteNext ? '<div style="margin-top:8px"><div style="font-size:10px;color:#aaa;margin-bottom:3px">다음 수업 핵심 목표</div><div style="font-size:12.5px;font-weight:500;color:var(--acc)">'+noteNext+'</div></div>' : '')
+
+    + '<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--lt);font-size:10px;color:#bbb;font-family:Poppins,sans-serif">RYAN MEMBERS · Marine City, Haeundae, Busan · 010-9654-1123</div>'
+    + '</div>';
+
+  area.scrollIntoView({behavior:'smooth'});
+}
+
+/* ══════════════════════════════
+   SAVE / RESET
+══════════════════════════════ */
+function saveSession() {
+  const data = {
+    date: new Date().toISOString(),
+    student: document.getElementById('studentName').value,
+    instructor: document.getElementById('instructorName').value,
+    session: document.getElementById('sessionNum').value,
+    mode: STATE.mode,
+    checks: Object.assign({}, STATE.checks),
+    todos: Object.assign({}, STATE.todos),
+    ratings: Object.assign({}, STATE.ratings),
+    topicAnswers: Object.assign({}, STATE.topicAnswers),
+    notes: {
+      mh:    document.getElementById('note-mh').value,
+      tense: document.getElementById('note-tense').value,
+      ext:   document.getElementById('note-ext').value,
+      test:  document.getElementById('note-test').value,
+      good:  document.getElementById('note-good').value,
+      next:  document.getElementById('note-next').value,
+    }
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const name = data.student || '학생';
+  a.href = url;
+  a.download = 'RM_수업체크_'+name+'_'+data.session+'회차_'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function resetAll() {
+  if(!confirm('초기화하시겠습니까?')) return;
+  Object.keys(STATE.checks).forEach(function(k){ STATE.checks[k]=false; });
+  Object.keys(STATE.todos).forEach(function(k){ STATE.todos[k]=false; });
+  STATE.ratings = {};
+  STATE.topicAnswers = {};
+  // reset UI
+  document.querySelectorAll('.check-item').forEach(function(el){
+    el.classList.remove('done');
+    el.style.opacity='';
+  });
+  document.querySelectorAll('.ci-box').forEach(function(el){
+    if(el.closest('.todo')) { el.textContent='!'; el.style.background=''; el.style.borderColor=''; el.style.color=''; }
+    else el.textContent='';
+  });
+  document.querySelectorAll('.rat-btn').forEach(function(el){ el.className='rat-btn'; });
+  TOPICS.forEach(function(tp){ setTopicAnswer(tp.id, 0); });
+  document.querySelectorAll('.note-field').forEach(function(el){ el.value=''; });
+  document.getElementById('summaryArea').style.display='none';
+  updateScore();
+}
+</script>
+</body>
+</html>
